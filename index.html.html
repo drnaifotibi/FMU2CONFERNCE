@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMU 2026 | 2nd Family & Community Medicine Conference</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM via CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel for compiling JSX in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Global Animations -->
+    <style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // --- INLINE SVG ICONS (Replaces Lucide dependency for zero-build HTML) ---
+        const IconProps = { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" };
+        
+        const Activity = ({ className }) => <svg {...IconProps} className={className}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>;
+        const Calendar = ({ className }) => <svg {...IconProps} className={className}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
+        const MapPin = ({ className }) => <svg {...IconProps} className={className}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>;
+        const Users = ({ className }) => <svg {...IconProps} className={className}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+        const Award = ({ className }) => <svg {...IconProps} className={className}><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>;
+        const Clock = ({ className }) => <svg {...IconProps} className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+        const BookOpen = ({ className }) => <svg {...IconProps} className={className}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>;
+        const Sparkles = ({ className }) => <svg {...IconProps} className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>;
+
+
+        // --- DATA EXTRACTION ---
+        const eventDetails = [
+          { label: "EVENT", value: "2nd Family & Community Medicine Conference (FMU)" },
+          { label: "DATE", value: "1-2 October 2026" },
+          { label: "VENUE", value: "Ministry of Interior Officers Club - Riyadh" },
+          { label: "ORGANIZED BY", value: "Security Forces Hospital | Saudi Society of Family & Community Medicine" },
+          { label: "ACCREDITATION", value: "CME hours accredited by the Saudi Commission for Health Specialties" },
+          { label: "EXPECTED ATTENDANCE", value: "Approximately 300 healthcare practitioners" }
+        ];
+
+        const day1Schedule = [
+          {
+            theme: "OPENING | SIGNING & CEREMONIES",
+            sessions: [
+              { time: "09:00-09:30", title: "Registration & Welcome" },
+              { time: "09:30-10:00", title: "Opening Ceremony (Awards)" },
+              { time: "10:00-10:15", title: "Winner Project Review" },
+              { time: "Break", title: "Coffee Break", isBreak: true }
+            ]
+          },
+          {
+            theme: "THEME | PRIMARY HEALTH CARE TRANSFORMATION",
+            sessions: [
+              { time: "10:15-10:30", title: "PHC Vision & Experience in KSA and the Gulf" },
+              { time: "10:30-10:45", title: "Industry Symposium" },
+              { time: "10:45-11:00", title: "Future of Primary Care (MOH)" },
+              { time: "11:00-11:15", title: "Value-Based Care" },
+              { time: "11:15-11:30", title: "Screening Updates (Weqaya)" },
+              { time: "11:30-11:45", title: "To be decided later" },
+              { time: "11:45-12:00", title: "Panel Discussion" },
+              { time: "12:00-01:00 PM", title: "Prayer & Lunch", isBreak: true }
+            ]
+          },
+          {
+            theme: "THEME | CARDIOLOGY",
+            sessions: [
+              { time: "01:00-01:15 PM", title: "Hypertension: Urgency" },
+              { time: "01:15-01:30 PM", title: "Lipid Management 2025" },
+              { time: "01:30-01:45 PM", title: "Acute Coronary Syndrome (ACS)" },
+              { time: "01:45-02:00 PM", title: "Atrial Fibrillation" }
+            ]
+          },
+          {
+            theme: "THEME | PULMONOLOGY",
+            sessions: [
+              { time: "02:00-02:15 PM", title: "COPD" },
+              { time: "02:15-02:30 PM", title: "Chronic Cough" },
+              { time: "02:30-02:45 PM", title: "Pneumonia Updates" },
+              { time: "02:45-03:00 PM", title: "DVT Management" },
+              { time: "03:00 PM", title: "Closing of Day 1", isBreak: true }
+            ]
+          }
+        ];
+
+        const day2Schedule = [
+          {
+            theme: "THEME | ENDOCRINOLOGY (Morning Block)",
+            sessions: [
+              { time: "08:00-08:15 AM", title: "Diabetes Mellitus Update" },
+              { time: "08:15-08:30 AM", title: "LADA vs MODY" },
+              { time: "08:30-08:45 AM", title: "Cardiorenal Syndrome" },
+              { time: "08:45-09:00 AM", title: "Metabolic Obesity" }
+            ]
+          },
+          {
+            theme: "THEME | WELL BABY CARE",
+            sessions: [
+              { time: "09:00-09:15 AM", title: "Failure to Thrive (FTT)" },
+              { time: "09:15-09:30 AM", title: "Milestones Delay" },
+              { time: "09:30-09:45 AM", title: "Nocturnal Enuresis" },
+              { time: "09:45-10:00 AM", title: "Common Dermatology Presentations" },
+              { time: "10:00-10:15 AM", title: "Coffee Break", isBreak: true }
+            ]
+          },
+          {
+            theme: "THEME | WOMEN'S HEALTH",
+            sessions: [
+              { time: "10:15-10:30 AM", title: "To be decided later" },
+              { time: "10:30-10:45 AM", title: "Breast Cancer Screening" },
+              { time: "10:45-11:00 AM", title: "Menstrual Disorders" },
+              { time: "11:00-11:15 AM", title: "Infertility Approach" },
+              { time: "11:15-11:30 AM", title: "Hypertension in Pregnancy" },
+              { time: "11:30-11:45 AM", title: "Postpartum Mental Care" },
+              { time: "11:45-12:00 PM", title: "Panel Discussion" },
+              { time: "12:00-01:00 PM", title: "Prayer & Lunch", isBreak: true }
+            ]
+          },
+          {
+            theme: "THEME | GASTROENTEROLOGY",
+            sessions: [
+              { time: "01:00-01:15 PM", title: "Irritable Bowel Syndrome (IBS)" },
+              { time: "01:15-01:30 PM", title: "Helicobacter pylori" },
+              { time: "01:30-01:45 PM", title: "Inflammatory Bowel Disease (IBD)" }
+            ]
+          },
+          {
+            theme: "THEME | ENDOCRINOLOGY (Afternoon Block)",
+            sessions: [
+              { time: "01:45-02:00 PM", title: "Thyroid Nodules Approach" },
+              { time: "02:00-02:15 PM", title: "Endocrine Hormones - Lab Abnormality Interpretations" }
+            ]
+          },
+          {
+            theme: "THEME | RHEUMATOLOGY",
+            sessions: [
+              { time: "02:15-02:30 PM", title: "Gouty Arthritis" },
+              { time: "02:30-02:45 PM", title: "Rheumatoid Arthritis" },
+              { time: "02:45-03:00 PM", title: "To be decided later" }
+            ]
+          }
+        ];
+
+        const workshopsDay1 = [
+          { time: "09:00-10:00 AM", hall: "To be decided later", title: "To be decided later" },
+          { time: "10:00-11:00 AM", hall: "A", title: "Managing KPIs: Translating Data into Decisional Information" },
+          { time: "11:00-12:00 PM", hall: "A", title: "Innovations in PHC toward Better Patient Satisfaction" },
+          { time: "01:00-01:30 PM", hall: "A", title: "ECG Interpretation" },
+          { time: "01:00-01:30 PM", hall: "B", title: "Common Sports Cases" },
+          { time: "01:30-02:00 PM", hall: "A", title: "Critical Appraisal / Research Methodology" },
+          { time: "01:30-02:00 PM", hall: "B", title: "Bronchial Asthma: Spirometry" }
+        ];
+
+        const workshopsDay2 = [
+          { time: "09:00-09:30 AM", hall: "A", title: "Obstructive Sleep Apnea (OSA)" },
+          { time: "09:00-09:30 AM", hall: "B", title: "Headache" },
+          { time: "09:30-10:00 AM", hall: "A", title: "Osteoporosis" },
+          { time: "09:30-10:00 AM", hall: "B", title: "Polymyalgia Rheumatica" },
+          { time: "10:00-12:00 PM", hall: "A", title: "MCQ Revision" },
+          { time: "10:00-10:30 AM", hall: "B", title: "Telehealth Essential Skills" },
+          { time: "10:30-11:00 AM", hall: "To be decided later", title: "To be decided later" },
+          { time: "01:00-03:00 PM", hall: "A+B", title: "OSCE" }
+        ];
+
+
+        // --- COMPONENTS ---
+        const SectionTitle = ({ title, subtitle }) => (
+          <div className="mb-12 text-center relative">
+            <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+              <div className="w-48 h-48 bg-gradient-to-r from-violet-400 to-fuchsia-400 rounded-full blur-3xl"></div>
+            </div>
+            <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-900 to-fuchsia-800 tracking-tight sm:text-4xl relative z-10">{title}</h2>
+            {subtitle && <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto relative z-10">{subtitle}</p>}
+            <div className="w-24 h-1.5 bg-gradient-to-r from-violet-500 to-fuchsia-500 mx-auto mt-6 rounded-full relative z-10"></div>
+          </div>
+        );
+
+        const ScheduleBlock = ({ schedule }) => (
+          <div className="space-y-8 animate-fade-in-up">
+            {schedule.map((block, index) => (
+              <div key={index} className="bg-white rounded-2xl shadow-lg shadow-violet-100/50 border border-violet-100 overflow-hidden hover:shadow-xl hover:shadow-violet-200/50 transition-all duration-300 transform hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-violet-50 to-fuchsia-50 border-b border-violet-100 px-6 py-4 border-l-4 border-l-violet-500">
+                  <h3 className="text-lg font-bold text-violet-900 tracking-wide uppercase text-sm">{block.theme}</h3>
+                </div>
+                <div className="divide-y divide-slate-50">
+                  {block.sessions.map((session, sIdx) => (
+                    <div 
+                      key={sIdx} 
+                      className={`px-6 py-4 flex flex-col sm:flex-row sm:items-center gap-4 transition-colors ${session.isBreak ? 'bg-orange-50/50' : 'hover:bg-violet-50/30'}`}
+                    >
+                      <div className="sm:w-48 flex-shrink-0 flex items-center text-slate-500 font-bold text-sm">
+                        <Clock className={`w-4 h-4 mr-2 ${session.isBreak ? 'text-orange-500' : 'text-violet-500'}`} />
+                        <span className={session.isBreak ? 'text-orange-600' : 'text-violet-700'}>{session.time}</span>
+                      </div>
+                      <div className={`flex-grow ${session.isBreak ? 'text-orange-800 font-semibold italic' : 'text-slate-700 font-medium'}`}>
+                        {session.title}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+        const WorkshopTable = ({ day, workshops }) => (
+          <div className="mb-12 animate-fade-in-up">
+            <h3 className="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-700 mb-6 flex items-center">
+              <BookOpen className="w-7 h-7 mr-3 text-blue-600" />
+              DAY {day} - WORKSHOPS
+            </h3>
+            <div className="bg-white rounded-3xl shadow-xl shadow-blue-100/50 border border-blue-100 overflow-hidden">
+              <div className="hidden sm:grid grid-cols-12 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100 px-6 py-4 text-xs font-bold text-blue-800 uppercase tracking-wider">
+                <div className="col-span-3">Time</div>
+                <div className="col-span-2">Hall</div>
+                <div className="col-span-7">Workshop</div>
+              </div>
+              <div className="divide-y divide-blue-50/50">
+                {workshops.map((ws, idx) => (
+                  <div key={idx} className="grid grid-cols-1 sm:grid-cols-12 px-6 py-4 hover:bg-blue-50/50 transition-colors gap-3 sm:gap-0">
+                    <div className="col-span-3 flex items-center text-slate-600 font-bold text-sm">
+                      <Clock className="w-4 h-4 mr-2 text-blue-500 sm:hidden" />
+                      {ws.time}
+                    </div>
+                    <div className="col-span-2 flex items-center">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 shadow-sm">
+                        Hall {ws.hall}
+                      </span>
+                    </div>
+                    <div className="col-span-7 flex items-center text-slate
